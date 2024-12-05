@@ -1,0 +1,26 @@
+# This is a TOML document with proper TOML names being
+# snake_case. Using snake_case keys are usually standard
+# practice but is not documented.
+
+title = "TOML Example"
+
+[owner.of.toml]
+full.name = "Tom Preston-Werner"
+date.of.birth = 1979-05-27
+
+[database.information]
+is.enabled = true
+ports = [ 8000, 8001, 8002 ]
+data.values = [ ["delta", "phi"], [3.14] ]
+TempTargets = { cpu = 79.5, case = 72.0 }
+
+[servers]
+
+[servers.alpha]
+ip.address = "10.0.0.1"
+role.information = "Frontend"
+
+[servers.beta]
+ip.address = "10.0.0.2"
+role.information = "Backend"
+

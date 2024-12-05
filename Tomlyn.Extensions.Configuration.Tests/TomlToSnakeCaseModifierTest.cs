@@ -18,7 +18,7 @@ public class TomlToSnakeCaseModifierTest
         
         // This is necessary to modify keys in your .toml file that have underscores. NOTE that if
         // .toml file has underscores, you must ensure your C# bind file has 'PascalCase' names. 
-        var config = configuration.RemoveUnderscores();
+        var config = configuration.RemoveDashesPeriodsQuotesUnderscores();
         config.Bind(sample);
 
         // The configuration system is type-agnostic and will not attempt to convert to numeric types
