@@ -25,9 +25,6 @@
     <None Update="Fixtures\Toml-Files\sample.toml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Fixtures\Toml-Files\sample_with_periods.toml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Fixtures\Toml-Files\sample_with_underscores.toml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -18,11 +18,11 @@ public static class TomlToSnakeCaseModifier
     /// <summary>
     /// This method creates a ConfigurationBuilder object that is modeled after the
     /// configuration of the .toml file that is passed. It modifies the configuration keys
-    /// by removing dashes, periods, quotes, or underscores.
+    /// by removing underscores.
     /// </summary>
     /// <param name="configuration">Represents the configuration from a .toml file that has underscores.</param>
     /// <returns>A new IConfiguration object with modified keys that have no underscores.</returns>
-    public static IConfiguration RemoveDashesPeriodsQuotesUnderscores(this IConfiguration configuration)
+    public static IConfiguration RemoveImpurityCharacterFromKeys(this IConfiguration configuration)
     {
         var newConfig = new ConfigurationBuilder();
         AddStrippedKeys(configuration, newConfig, "");
@@ -30,54 +30,40 @@ public static class TomlToSnakeCaseModifier
     }
 
     /// <summary>
-    /// The method is designed to recursively iterate through a configuration structure, modify its keys by
-    /// stripping the dashes, periods, quotes, or underscores, and then add these modified key-value pairs to
-    /// a new IConfigurationBuilder.
+    /// The method is designed to recursively iterate through a configuration structure,
+    /// modify its keys by removing underscores, and then add these modified key-value pairs
+    /// to a new IConfigurationBuilder.
     /// </summary>
     /// <param name="configuration">The IConfiguration representing the .toml file (has underscores).</param>
     /// <param name="newConfig">The IConfiguration that is modified with keys that have no underscores.</param>
     /// <param name="currentPath">Current path of the configuration key, separated by colons for nesting.</param>
     private static void AddStrippedKeys(IConfiguration configuration, IConfigurationBuilder newConfig, string currentPath)
     {
+        var children = configuration.GetChildren().ToList();
         // Iterate through each key in the current configuration section
         foreach (var child in configuration.GetChildren())
         {
+            var strippedKey = "";
             if (child.Key.Contains("_"))
             {
-                var strippedKey = child.Key.Replace("_", "");
-                var newPath = string.IsNullOrEmpty(currentPath) ? strippedKey : $"{currentPath}:{strippedKey}";
-
-                // If the current child has further children, recurse into them
-                if (child.GetChildren().Any())
-                    AddStrippedKeys(child, newConfig, newPath);
-                else
-                    // No more children, add the current configuration item to the builder
-                    newConfig.AddInMemoryCollection(new Dictionary<string, string> { { newPath, child.Value } });
+                strippedKey = child.Key.Replace("_", "");
             }
-            else if(child.Key.Contains("-"))
+            else if (child.Key.Contains("-"))
             {
-                var strippedKey = child.Key.Replace("-", "");
-                var newPath = string.IsNullOrEmpty(currentPath) ? strippedKey : $"{currentPath}:{strippedKey}";
-
-                // If the current child has further children, recurse into them
-                if (child.GetChildren().Any())
-                    AddStrippedKeys(child, newConfig, newPath);
-                else
-                    // No more children, add the current configuration item to the builder
-                    newConfig.AddInMemoryCollection(new Dictionary<string, string> { { newPath, child.Value } });
+                strippedKey = child.Key.Replace("-", "");
             }
-            else if (child.Key.Contains("."))
+            else
             {
-                var strippedKey = child.Key.Replace(".", "");
-                var newPath = string.IsNullOrEmpty(currentPath) ? strippedKey : $"{currentPath}:{strippedKey}";
-
-                // If the current child has further children, recurse into them
-                if (child.GetChildren().Any())
-                    AddStrippedKeys(child, newConfig, newPath);
-                else
-                    // No more children, add the current configuration item to the builder
-                    newConfig.AddInMemoryCollection(new Dictionary<string, string> { { newPath, child.Value } });
+                strippedKey = child.Key;
             }
+            var newPath = string.IsNullOrEmpty(currentPath) ? strippedKey : $"{currentPath}:{strippedKey}";
+
+            // If the current child has further children, recurse into them
+            if (child.GetChildren().Any())
+                AddStrippedKeys(child, newConfig, newPath);
+            else
+                // No more children, add the current configuration item to the builder
+                newConfig.AddInMemoryCollection(new Dictionary<string, string> { { newPath, child.Value } });
         }
     }
 }

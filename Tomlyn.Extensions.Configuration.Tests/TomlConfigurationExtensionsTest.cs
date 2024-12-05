@@ -12,7 +12,7 @@ public class TomlConfigurationExtensionsTest
     public void Bind()
     {
         var sample = new Sample();
-        var configuration = new ConfigurationBuilder().AddTomlFile("sample.toml").Build();
+        var configuration = new ConfigurationBuilder().AddTomlFile("./Fixtures/Toml-Files/sample.toml").Build();
         configuration.Bind(sample);
 
         var expected = new Sample

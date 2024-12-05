@@ -9,7 +9,7 @@ namespace Tomlyn.Extensions.Configuration.Tests;
 public class TomlToSnakeCaseModifierTest
 {
     [Fact]
-    public void BindCorrectUnderscores()
+    public void BindCorrectWithUnderScores()
     {
         var sample = new SampleWithUnderscores();
         var configuration = new ConfigurationBuilder()
@@ -18,7 +18,7 @@ public class TomlToSnakeCaseModifierTest
         
         // This is necessary to modify keys in your .toml file that have underscores. NOTE that if
         // .toml file has underscores, you must ensure your C# bind file has 'PascalCase' names. 
-        var config = configuration.RemoveDashesPeriodsQuotesUnderscores();
+        var config = configuration.RemoveImpurityCharacterFromKeys();
         config.Bind(sample);
 
         // The configuration system is type-agnostic and will not attempt to convert to numeric types
@@ -74,69 +74,69 @@ public class TomlToSnakeCaseModifierTest
         sample.Should().BeEquivalentTo(expected);
     }
     
-    // [Fact]
-    // public void BindCorrectDashes()
-    // {
-    //     var sample = new SampleWithUnderscores();
-    //     var configuration = new ConfigurationBuilder()
-    //         .AddTomlFile("sample_with_dashes.toml")
-    //         .Build();
-    //     
-    //     // This is necessary to modify keys in your .toml file that have underscores. NOTE that if
-    //     // .toml file has underscores, you must ensure your C# bind file has 'PascalCase' names. 
-    //     var config = configuration.RemoveDashesPeriodsQuotesUnderscores();
-    //     config.Bind(sample);
-    //
-    //     // The configuration system is type-agnostic and will not attempt to convert to numeric types
-    //     // when the target is an object type given the DataValues variable declaration.
-    //     foreach (var item in sample.DatabaseInformation.DataValues)
-    //     {
-    //         for (int i = 0; i < item.Count; i++)
-    //         {
-    //             if (double.TryParse(item[i].ToString(), out double result))
-    //             {
-    //                 item[i] = result;
-    //             }
-    //         }
-    //     }
-    //
-    //     var expected = new SampleWithUnderscores
-    //     {
-    //         Title = "TOML Example",
-    //         OwnerOfToml = new OwnerOfToml
-    //         {
-    //             FullName = "Tom Preston-Werner",
-    //             DateOfBirth = new DateTime(1979, 05, 27),
-    //         },
-    //         DatabaseInformation = new DatabaseInformation
-    //         {
-    //             IsEnabled = true,
-    //             Ports = new ushort[] { 8000, 8001, 8002 },
-    //             DataValues = new List<List<object>>
-    //             {
-    //                 new List<object> { "delta", "phi" },
-    //                 new List<object> { 3.14 }
-    //             },
-    //             TempTargets = new Dictionary<string, decimal>
-    //             {
-    //                 ["cpu"] = 79.5m,
-    //                 ["case"] = 72m,
-    //             }
-    //         },
-    //         Servers = new Dictionary<string, Servers>
-    //         {
-    //             ["alpha"] = new()
-    //             {
-    //                 IpAddress = "10.0.0.1",
-    //                 RoleInformation = RoleInformation.Frontend,
-    //             },
-    //             ["beta"] = new()
-    //             {
-    //                 IpAddress = "10.0.0.2",
-    //                 RoleInformation = RoleInformation.Backend,
-    //             },
-    //         }
-    //     };
-    //     sample.Should().BeEquivalentTo(expected);
-    // }
+    [Fact]
+    public void BindCorrectWithDashes()
+    {
+        var sample = new SampleWithUnderscores();
+        var configuration = new ConfigurationBuilder()
+            .AddTomlFile("./Fixtures/Toml-Files/sample_with_dashes.toml")
+            .Build();
+        
+        // This is necessary to modify keys in your .toml file that have underscores. NOTE that if
+        // .toml file has underscores, you must ensure your C# bind file has 'PascalCase' names. 
+        var config = configuration.RemoveImpurityCharacterFromKeys();
+        config.Bind(sample);
+
+        // The configuration system is type-agnostic and will not attempt to convert to numeric types
+        // when the target is an object type given the DataValues variable declaration.
+        foreach (var item in sample.DatabaseInformation.DataValues)
+        {
+            for (int i = 0; i < item.Count; i++)
+            {
+                if (double.TryParse(item[i].ToString(), out double result))
+                {
+                    item[i] = result;
+                }
+            }
+        }
+
+        var expected = new SampleWithUnderscores
+        {
+            Title = "TOML Example",
+            OwnerOfToml = new OwnerOfToml
+            {
+                FullName = "Tom Preston-Werner",
+                DateOfBirth = new DateTime(1979, 05, 27),
+            },
+            DatabaseInformation = new DatabaseInformation
+            {
+                IsEnabled = true,
+                Ports = new ushort[] { 8000, 8001, 8002 },
+                DataValues = new List<List<object>>
+                {
+                    new List<object> { "delta", "phi" },
+                    new List<object> { 3.14 }
+                },
+                TempTargets = new Dictionary<string, decimal>
+                {
+                    ["cpu"] = 79.5m,
+                    ["case"] = 72m,
+                }
+            },
+            Servers = new Dictionary<string, Servers>
+            {
+                ["alpha"] = new()
+                {
+                    IpAddress = "10.0.0.1",
+                    RoleInformation = RoleInformation.Frontend,
+                },
+                ["beta"] = new()
+                {
+                    IpAddress = "10.0.0.2",
+                    RoleInformation = RoleInformation.Backend,
+                },
+            }
+        };
+        sample.Should().BeEquivalentTo(expected);
+    }
 }
